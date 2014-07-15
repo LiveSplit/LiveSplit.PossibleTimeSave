@@ -17,7 +17,7 @@ namespace LiveSplit.UI.Components
 
         public string Description
         {
-            get { return ""; }
+            get { return "Displays the difference between a comparison segment and the best segment, effectively showing how much time can be saved."; }
         }
 
         public ComponentCategory Category
