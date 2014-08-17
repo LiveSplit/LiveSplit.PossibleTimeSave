@@ -34,7 +34,15 @@ namespace LiveSplit.UI.Components
         public PossibleTimeSave(LiveSplitState state)
         {
             Formatter = new PossibleTimeSaveFormatter();
-            InternalComponent = new InfoTimeComponent(null, null, Formatter);
+            InternalComponent = new InfoTimeComponent(null, null, Formatter)
+            {
+                AlternateNameText = new String[]
+                {
+                    "Possible Time Save",
+                    "Poss. Time Save",
+                    "Time Save"
+                }
+            };
             Cache = new GraphicsCache();
             Settings = new PossibleTimeSaveSettings()
             {
@@ -171,6 +179,10 @@ namespace LiveSplit.UI.Components
             {
                 invalidator.Invalidate(0, 0, width, height);
             }
+        }
+
+        public void Dispose()
+        {
         }
     }
 }
