@@ -138,14 +138,6 @@ namespace LiveSplit.UI.Components
             return Settings.GetSettings(document);
         }
 
-
-        public void RenameComparison(string oldName, string newName)
-        {
-            if (Settings.Comparison == oldName)
-                Settings.Comparison = newName;
-        }
-
-
         public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
         {
             var comparison = Settings.Comparison == "Current Comparison" ? state.CurrentComparison : Settings.Comparison;
