@@ -48,6 +48,17 @@ namespace LiveSplit.UI.Components
             {
                 CurrentState = state
             };
+            state.ComparisonRenamed += state_ComparisonRenamed;
+        }
+
+        void state_ComparisonRenamed(object sender, EventArgs e)
+        {
+            var args = (RenameEventArgs)e;
+            if (Settings.Comparison == args.OldName)
+            {
+                Settings.Comparison = args.NewName;
+                ((LiveSplitState)sender).Layout.HasChanged = true;
+            }
         }
 
         private void PrepareDraw(LiveSplitState state)
