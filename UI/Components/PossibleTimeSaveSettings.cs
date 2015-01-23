@@ -36,6 +36,7 @@ namespace LiveSplit.UI.Components
         public String Comparison { get; set; }
         public LiveSplitState CurrentState { get; set; }
         public bool Display2Rows { get; set; }
+        public bool TotalTimeSave { get; set; }
 
         public LayoutMode Mode { get; set; }
 
@@ -53,6 +54,7 @@ namespace LiveSplit.UI.Components
             BackgroundGradient = GradientType.Plain;
             Comparison = "Current Comparison";
             Display2Rows = false;
+            TotalTimeSave = false;
 
             chkOverrideTextColor.DataBindings.Add("Checked", this, "OverrideTextColor", false, DataSourceUpdateMode.OnPropertyChanged);
             btnTextColor.DataBindings.Add("BackColor", this, "TextColor", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -65,6 +67,7 @@ namespace LiveSplit.UI.Components
             btnColor2.DataBindings.Add("BackColor", this, "BackgroundColor2", false, DataSourceUpdateMode.OnPropertyChanged);
             cmbComparison.SelectedIndexChanged += cmbComparison_SelectedIndexChanged;
             cmbComparison.DataBindings.Add("SelectedItem", this, "Comparison", false, DataSourceUpdateMode.OnPropertyChanged);
+            chkTotalTimeSave.DataBindings.Add("Checked", this, "TotalTimeSave", false, DataSourceUpdateMode.OnPropertyChanged);
             this.Load += PossibleTimeSaveSettings_Load;
 
             rdoSeconds.CheckedChanged += rdoSeconds_CheckedChanged;
@@ -168,12 +171,16 @@ namespace LiveSplit.UI.Components
                 Display2Rows = Boolean.Parse(element["Display2Rows"].InnerText);
             else
                 Display2Rows = false;
+            if (version >= new Version(1, 5))
+                TotalTimeSave = Boolean.Parse(element["TotalTimeSave"].InnerText);
+            else
+                TotalTimeSave = false;
         }
 
         public XmlNode GetSettings(XmlDocument document)
         {
             var parent = document.CreateElement("Settings");
-            parent.AppendChild(ToElement(document, "Version", "1.4"));
+            parent.AppendChild(ToElement(document, "Version", "1.5"));
             parent.AppendChild(ToElement(document, TextColor, "TextColor"));
             parent.AppendChild(ToElement(document, "OverrideTextColor", OverrideTextColor));
             parent.AppendChild(ToElement(document, TimeColor, "TimeColor"));
@@ -184,6 +191,7 @@ namespace LiveSplit.UI.Components
             parent.AppendChild(ToElement(document, "BackgroundGradient", BackgroundGradient));
             parent.AppendChild(ToElement(document, "Comparison", Comparison));
             parent.AppendChild(ToElement(document, "Display2Rows", Display2Rows));
+            parent.AppendChild(ToElement(document, "TotalTimeSave", TotalTimeSave));
             return parent;
         }
 

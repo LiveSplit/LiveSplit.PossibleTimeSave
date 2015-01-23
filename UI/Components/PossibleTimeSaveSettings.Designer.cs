@@ -53,6 +53,7 @@
             this.btnColor1 = new System.Windows.Forms.Button();
             this.btnColor2 = new System.Windows.Forms.Button();
             this.chkTwoRows = new System.Windows.Forms.CheckBox();
+            this.chkTotalTimeSave = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -80,6 +81,7 @@
             this.tableLayoutPanel1.Controls.Add(this.btnColor1, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnColor2, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.chkTwoRows, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.chkTotalTimeSave, 3, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(7, 7);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -399,6 +401,18 @@
             this.chkTwoRows.Text = "Display 2 Rows";
             this.chkTwoRows.UseVisualStyleBackColor = true;
             // 
+            // chkTotalTimeSave
+            // 
+            this.chkTotalTimeSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkTotalTimeSave.AutoSize = true;
+            this.chkTotalTimeSave.Location = new System.Drawing.Point(224, 64);
+            this.chkTotalTimeSave.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
+            this.chkTotalTimeSave.Name = "chkTotalTimeSave";
+            this.chkTotalTimeSave.Size = new System.Drawing.Size(235, 17);
+            this.chkTotalTimeSave.TabIndex = 37;
+            this.chkTotalTimeSave.Text = "Show Total Possible Time Save";
+            this.chkTotalTimeSave.UseVisualStyleBackColor = true;
+            // 
             // PossibleTimeSaveSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -451,5 +465,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox cmbComparison;
         private System.Windows.Forms.CheckBox chkTwoRows;
+        private System.Windows.Forms.CheckBox chkTotalTimeSave;
     }
 }

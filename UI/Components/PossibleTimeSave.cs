@@ -34,15 +34,7 @@ namespace LiveSplit.UI.Components
         public PossibleTimeSave(LiveSplitState state)
         {
             Formatter = new PossibleTimeSaveFormatter();
-            InternalComponent = new InfoTimeComponent(null, null, Formatter)
-            {
-                AlternateNameText = new String[]
-                {
-                    "Possible Time Save",
-                    "Poss. Time Save",
-                    "Time Save"
-                }
-            };
+            InternalComponent = new InfoTimeComponent(null, null, Formatter);
             Cache = new GraphicsCache();
             Settings = new PossibleTimeSaveSettings()
             {
@@ -130,7 +122,7 @@ namespace LiveSplit.UI.Components
 
         public string ComponentName
         {
-            get { return "Possible Time Save" + (Settings.Comparison == "Current Comparison" ? "" : " (" + CompositeComparisons.GetShortComparisonName(Settings.Comparison) + ")"); }
+            get { return (Settings.TotalTimeSave ? "Total " : "") + "Possible Time Save" + (Settings.Comparison == "Current Comparison" ? "" : " (" + CompositeComparisons.GetShortComparisonName(Settings.Comparison) + ")"); }
         }
 
         public Control GetSettingsControl(LayoutMode mode)
@@ -155,27 +147,75 @@ namespace LiveSplit.UI.Components
             if (!state.Run.Comparisons.Contains(comparison))
                 comparison = state.CurrentComparison;
             var comparisonName = CompositeComparisons.GetShortComparisonName(comparison);
-            var componentName = "Possible Time Save" + (Settings.Comparison == "Current Comparison" ? "" : " (" + comparisonName + ")");
+            var componentName = (Settings.TotalTimeSave ? "Total " : "") + "Possible Time Save" + (Settings.Comparison == "Current Comparison" ? "" : " (" + comparisonName + ")");
             InternalComponent.LongestString = componentName;
             InternalComponent.NameLabel.Text = componentName;
-            if (state.CurrentPhase == TimerPhase.Running || state.CurrentPhase == TimerPhase.Paused)
+
+            if (Settings.TotalTimeSave)
             {
-                var time = (state.CurrentSplit.Comparisons[comparison][state.CurrentTimingMethod]
-                    - ((state.CurrentSplitIndex - 1 >= 0) ? state.Run[state.CurrentSplitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod] : TimeSpan.Zero))
-                    - state.CurrentSplit.BestSegmentTime[state.CurrentTimingMethod];
+                var bestSplitTime = state.Run.Last().Comparisons[BestSegmentsComparisonGenerator.ComparisonName][state.CurrentTimingMethod];
+                var comparisonSplitTime = state.Run.Last().Comparisons[comparison][state.CurrentTimingMethod];
+                if (state.CurrentPhase == TimerPhase.Running || state.CurrentPhase == TimerPhase.Paused)
+                {
+                    TimeSpan? deltaBest = LiveSplitStateHelper.GetLastDelta(state, state.CurrentSplitIndex, BestSegmentsComparisonGenerator.ComparisonName, state.CurrentTimingMethod) ?? TimeSpan.Zero;
+                    TimeSpan? deltaComparison = LiveSplitStateHelper.GetLastDelta(state, state.CurrentSplitIndex, comparison, state.CurrentTimingMethod) ?? TimeSpan.Zero;
+                    var liveDeltaBest = state.CurrentTime[state.CurrentTimingMethod] 
+                        - state.CurrentSplit.Comparisons[BestSegmentsComparisonGenerator.ComparisonName][state.CurrentTimingMethod];
+                    var liveDeltaComparison = state.CurrentTime[state.CurrentTimingMethod] 
+                        - state.CurrentSplit.Comparisons[comparison][state.CurrentTimingMethod];
+                    if (liveDeltaBest > deltaBest)
+                        deltaBest = liveDeltaBest;
+                    if (liveDeltaComparison > deltaComparison)
+                        deltaComparison = liveDeltaComparison;
 
-                if (time < TimeSpan.Zero)
-                    time = TimeSpan.Zero;
+                    var time = comparisonSplitTime - bestSplitTime + deltaComparison - deltaBest;
 
-                InternalComponent.TimeValue = time;
+                    if (time < TimeSpan.Zero)
+                        time = TimeSpan.Zero;
+
+                    InternalComponent.TimeValue = time;
+                }
+                else if (state.CurrentPhase == TimerPhase.Ended)
+                {
+                    InternalComponent.TimeValue = TimeSpan.Zero;
+                }
+                else
+                {
+                    InternalComponent.TimeValue = comparisonSplitTime - bestSplitTime;
+                }
             }
             else
             {
-                InternalComponent.TimeValue = null;
+                if (state.CurrentPhase == TimerPhase.Running || state.CurrentPhase == TimerPhase.Paused)
+                {
+                    var time = (state.CurrentSplit.Comparisons[comparison][state.CurrentTimingMethod]
+                        - ((state.CurrentSplitIndex - 1 >= 0) ? state.Run[state.CurrentSplitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod] : TimeSpan.Zero))
+                        - state.CurrentSplit.BestSegmentTime[state.CurrentTimingMethod];
+
+                    if (time < TimeSpan.Zero)
+                        time = TimeSpan.Zero;
+
+                    InternalComponent.TimeValue = time;
+                }
+                else
+                {
+                    InternalComponent.TimeValue = null;
+                }
             }
 
             Cache.Restart();
             Cache["NameValue"] = InternalComponent.NameLabel.Text;
+
+            if (Cache.HasChanged)
+            {
+                InternalComponent.AlternateNameText.Clear();
+                if (InternalComponent.InformationName.Contains("Total"))
+                    InternalComponent.AlternateNameText.Add("Total Possible Time Save");
+                InternalComponent.AlternateNameText.Add("Possible Time Save");
+                InternalComponent.AlternateNameText.Add("Poss. Time Save");
+                InternalComponent.AlternateNameText.Add("Time Save");
+            }
+
             Cache["TimeValue"] = InternalComponent.ValueLabel.Text;
 
             if (invalidator != null && Cache.HasChanged)
