@@ -141,6 +141,27 @@ namespace LiveSplit.UI.Components
             return Settings.GetSettings(document);
         }
 
+        public TimeSpan? GetPossibleTimeSave(LiveSplitState state, ISegment segment, string comparison, bool live = false)
+        {
+            var splitIndex = state.Run.IndexOf(segment);
+
+            var time = (segment.Comparisons[comparison][state.CurrentTimingMethod]
+                - ((splitIndex - 1 >= 0) ? state.Run[splitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod] : TimeSpan.Zero))
+                - segment.BestSegmentTime[state.CurrentTimingMethod];
+
+            if (live)
+            {
+                var segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetPreviousSegment(state, splitIndex, true, false, comparison, state.CurrentTimingMethod);
+                if (segmentDelta < time)
+                    time = segmentDelta;
+            }
+
+            if (time < TimeSpan.Zero)
+                time = TimeSpan.Zero;
+
+            return time;
+        }
+
         public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
         {
             var comparison = Settings.Comparison == "Current Comparison" ? state.CurrentComparison : Settings.Comparison;
@@ -153,27 +174,15 @@ namespace LiveSplit.UI.Components
 
             if (Settings.TotalTimeSave)
             {
-                var bestSplitTime = state.Run.Last().Comparisons[BestSegmentsComparisonGenerator.ComparisonName][state.CurrentTimingMethod];
-                var comparisonSplitTime = state.Run.Last().Comparisons[comparison][state.CurrentTimingMethod];
                 if (state.CurrentPhase == TimerPhase.Running || state.CurrentPhase == TimerPhase.Paused)
                 {
-                    TimeSpan? deltaBest = LiveSplitStateHelper.GetLastDelta(state, state.CurrentSplitIndex, BestSegmentsComparisonGenerator.ComparisonName, state.CurrentTimingMethod) ?? TimeSpan.Zero;
-                    TimeSpan? deltaComparison = LiveSplitStateHelper.GetLastDelta(state, state.CurrentSplitIndex, comparison, state.CurrentTimingMethod) ?? TimeSpan.Zero;
-                    var liveDeltaBest = state.CurrentTime[state.CurrentTimingMethod] 
-                        - state.CurrentSplit.Comparisons[BestSegmentsComparisonGenerator.ComparisonName][state.CurrentTimingMethod];
-                    var liveDeltaComparison = state.CurrentTime[state.CurrentTimingMethod] 
-                        - state.CurrentSplit.Comparisons[comparison][state.CurrentTimingMethod];
-                    if (liveDeltaBest > deltaBest)
-                        deltaBest = liveDeltaBest;
-                    if (liveDeltaComparison > deltaComparison)
-                        deltaComparison = liveDeltaComparison;
+                    var totalPossibleTimeSave = state.Run
+                        .Skip(state.CurrentSplitIndex)
+                        .Select(x => GetPossibleTimeSave(state, x, comparison, true))
+                        .Where(x => x.HasValue)
+                        .Aggregate((TimeSpan?)TimeSpan.Zero, (a, b) => a + b);
 
-                    var time = comparisonSplitTime - bestSplitTime + deltaComparison - deltaBest;
-
-                    if (time < TimeSpan.Zero)
-                        time = TimeSpan.Zero;
-
-                    InternalComponent.TimeValue = time;
+                    InternalComponent.TimeValue = totalPossibleTimeSave;
                 }
                 else if (state.CurrentPhase == TimerPhase.Ended)
                 {
@@ -181,6 +190,8 @@ namespace LiveSplit.UI.Components
                 }
                 else
                 {
+                    var bestSplitTime = state.Run.Last().Comparisons[BestSegmentsComparisonGenerator.ComparisonName][state.CurrentTimingMethod];
+                    var comparisonSplitTime = state.Run.Last().Comparisons[comparison][state.CurrentTimingMethod];
                     InternalComponent.TimeValue = comparisonSplitTime - bestSplitTime;
                 }
             }
@@ -188,14 +199,7 @@ namespace LiveSplit.UI.Components
             {
                 if (state.CurrentPhase == TimerPhase.Running || state.CurrentPhase == TimerPhase.Paused)
                 {
-                    var time = (state.CurrentSplit.Comparisons[comparison][state.CurrentTimingMethod]
-                        - ((state.CurrentSplitIndex - 1 >= 0) ? state.Run[state.CurrentSplitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod] : TimeSpan.Zero))
-                        - state.CurrentSplit.BestSegmentTime[state.CurrentTimingMethod];
-
-                    if (time < TimeSpan.Zero)
-                        time = TimeSpan.Zero;
-
-                    InternalComponent.TimeValue = time;
+                    InternalComponent.TimeValue = GetPossibleTimeSave(state, state.CurrentSplit, comparison);
                 }
                 else
                 {
