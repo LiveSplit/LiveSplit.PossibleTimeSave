@@ -149,7 +149,7 @@ namespace LiveSplit.UI.Components
                 - ((splitIndex - 1 >= 0) ? state.Run[splitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod] : TimeSpan.Zero))
                 - segment.BestSegmentTime[state.CurrentTimingMethod];
 
-            if (live)
+            if (live && splitIndex == state.CurrentSplitIndex)
             {
                 var segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetPreviousSegment(state, splitIndex, true, false, comparison, state.CurrentTimingMethod);
                 if (segmentDelta < time)
@@ -174,7 +174,11 @@ namespace LiveSplit.UI.Components
 
             if (Settings.TotalTimeSave)
             {
-                if (state.CurrentPhase == TimerPhase.Running || state.CurrentPhase == TimerPhase.Paused)
+                if (state.CurrentPhase == TimerPhase.Ended)
+                {
+                    InternalComponent.TimeValue = TimeSpan.Zero;
+                }
+                else                
                 {
                     var totalPossibleTimeSave = state.Run
                         .Skip(state.CurrentSplitIndex)
@@ -183,16 +187,6 @@ namespace LiveSplit.UI.Components
                         .Aggregate((TimeSpan?)TimeSpan.Zero, (a, b) => a + b);
 
                     InternalComponent.TimeValue = totalPossibleTimeSave;
-                }
-                else if (state.CurrentPhase == TimerPhase.Ended)
-                {
-                    InternalComponent.TimeValue = TimeSpan.Zero;
-                }
-                else
-                {
-                    var bestSplitTime = state.Run.Last().Comparisons[BestSegmentsComparisonGenerator.ComparisonName][state.CurrentTimingMethod];
-                    var comparisonSplitTime = state.Run.Last().Comparisons[comparison][state.CurrentTimingMethod];
-                    InternalComponent.TimeValue = comparisonSplitTime - bestSplitTime;
                 }
             }
             else
