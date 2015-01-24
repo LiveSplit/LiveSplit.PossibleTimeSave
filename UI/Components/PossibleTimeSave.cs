@@ -144,14 +144,29 @@ namespace LiveSplit.UI.Components
         public TimeSpan? GetPossibleTimeSave(LiveSplitState state, ISegment segment, string comparison, bool live = false)
         {
             var splitIndex = state.Run.IndexOf(segment);
+            var prevTime = TimeSpan.Zero;
+            TimeSpan? bestSegments = state.Run[splitIndex].BestSegmentTime[state.CurrentTimingMethod];
 
-            var time = (segment.Comparisons[comparison][state.CurrentTimingMethod]
-                - ((splitIndex - 1 >= 0) ? state.Run[splitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod] : TimeSpan.Zero))
-                - segment.BestSegmentTime[state.CurrentTimingMethod];
+            while (splitIndex > 0 && bestSegments != null)
+            {
+                var splitTime = state.Run[splitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod];
+                if (splitTime != null)
+                {
+                    prevTime = splitTime.Value;
+                    break;
+                }
+                else
+                {
+                    splitIndex--;
+                    bestSegments += state.Run[splitIndex].BestSegmentTime[state.CurrentTimingMethod];
+                }
+            }
+
+            var time = segment.Comparisons[comparison][state.CurrentTimingMethod] - prevTime - bestSegments;
 
             if (live && splitIndex == state.CurrentSplitIndex)
             {
-                var segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetPreviousSegment(state, splitIndex, true, false, comparison, state.CurrentTimingMethod);
+                var segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetPreviousSegment(state, state.Run.IndexOf(segment), true, false, comparison, state.CurrentTimingMethod);
                 if (segmentDelta < time)
                     time = segmentDelta;
             }
