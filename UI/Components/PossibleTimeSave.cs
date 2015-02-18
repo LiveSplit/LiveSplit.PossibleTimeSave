@@ -19,8 +19,6 @@ namespace LiveSplit.UI.Components
         public PossibleTimeSaveSettings Settings { get; set; }
         private PossibleTimeSaveFormatter Formatter { get; set; }
 
-        public GraphicsCache Cache { get; set; }
-
         public float PaddingTop { get { return InternalComponent.PaddingTop; } }
         public float PaddingLeft { get { return InternalComponent.PaddingLeft; } }
         public float PaddingBottom { get { return InternalComponent.PaddingBottom; } }
@@ -35,7 +33,6 @@ namespace LiveSplit.UI.Components
         {
             Formatter = new PossibleTimeSaveFormatter();
             InternalComponent = new InfoTimeComponent(null, null, Formatter);
-            Cache = new GraphicsCache();
             Settings = new PossibleTimeSaveSettings()
             {
                 CurrentState = state
@@ -184,8 +181,18 @@ namespace LiveSplit.UI.Components
                 comparison = state.CurrentComparison;
             var comparisonName = CompositeComparisons.GetShortComparisonName(comparison);
             var componentName = (Settings.TotalTimeSave ? "Total " : "") + "Possible Time Save" + (Settings.Comparison == "Current Comparison" ? "" : " (" + comparisonName + ")");
+            
+            if (InternalComponent.InformationName != componentName)
+            {
+                InternalComponent.AlternateNameText.Clear();
+                if (componentName.Contains("Total"))
+                    InternalComponent.AlternateNameText.Add("Total Possible Time Save");
+                InternalComponent.AlternateNameText.Add("Possible Time Save");
+                InternalComponent.AlternateNameText.Add("Poss. Time Save");
+                InternalComponent.AlternateNameText.Add("Time Save");
+            }
             InternalComponent.LongestString = componentName;
-            InternalComponent.NameLabel.Text = componentName;
+            InternalComponent.InformationName = componentName;
 
             if (Settings.TotalTimeSave)
             {
@@ -216,25 +223,7 @@ namespace LiveSplit.UI.Components
                 }
             }
 
-            Cache.Restart();
-            Cache["NameValue"] = InternalComponent.NameLabel.Text;
-
-            if (Cache.HasChanged)
-            {
-                InternalComponent.AlternateNameText.Clear();
-                if (InternalComponent.InformationName.Contains("Total"))
-                    InternalComponent.AlternateNameText.Add("Total Possible Time Save");
-                InternalComponent.AlternateNameText.Add("Possible Time Save");
-                InternalComponent.AlternateNameText.Add("Poss. Time Save");
-                InternalComponent.AlternateNameText.Add("Time Save");
-            }
-
-            Cache["TimeValue"] = InternalComponent.ValueLabel.Text;
-
-            if (invalidator != null && Cache.HasChanged)
-            {
-                invalidator.Invalidate(0, 0, width, height);
-            }
+            InternalComponent.Update(invalidator, state, width, height, mode);
         }
 
         public void Dispose()
