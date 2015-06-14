@@ -163,7 +163,7 @@ namespace LiveSplit.UI.Components
 
             if (live && splitIndex == state.CurrentSplitIndex)
             {
-                var segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetPreviousSegment(state, state.Run.IndexOf(segment), true, false, comparison, state.CurrentTimingMethod);
+                var segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetLiveSegmentDelta(state, state.Run.IndexOf(segment), comparison, state.CurrentTimingMethod);
                 if (segmentDelta < time)
                     time = segmentDelta;
             }
