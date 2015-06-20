@@ -68,13 +68,6 @@ namespace LiveSplit.UI.Components
             cmbComparison.SelectedIndexChanged += cmbComparison_SelectedIndexChanged;
             cmbComparison.DataBindings.Add("SelectedItem", this, "Comparison", false, DataSourceUpdateMode.OnPropertyChanged);
             chkTotalTimeSave.DataBindings.Add("Checked", this, "TotalTimeSave", false, DataSourceUpdateMode.OnPropertyChanged);
-            this.Load += PossibleTimeSaveSettings_Load;
-
-            rdoSeconds.CheckedChanged += rdoSeconds_CheckedChanged;
-            rdoHundredths.CheckedChanged += rdoHundredths_CheckedChanged;
-
-            chkOverrideTextColor.CheckedChanged += chkOverrideTextColor_CheckedChanged;
-            chkOverrideTimeColor.CheckedChanged += chkOverrideTimeColor_CheckedChanged;
         }
 
         void chkOverrideTimeColor_CheckedChanged(object sender, EventArgs e)
