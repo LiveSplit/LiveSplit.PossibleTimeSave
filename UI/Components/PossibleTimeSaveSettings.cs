@@ -30,6 +30,7 @@ namespace LiveSplit.UI.Components
         public LiveSplitState CurrentState { get; set; }
         public bool Display2Rows { get; set; }
         public bool TotalTimeSave { get; set; }
+        public bool DropDecimals { get; set; }
 
         public LayoutMode Mode { get; set; }
 
@@ -48,6 +49,7 @@ namespace LiveSplit.UI.Components
             Comparison = "Current Comparison";
             Display2Rows = false;
             TotalTimeSave = false;
+            DropDecimals = false;
 
             chkOverrideTextColor.DataBindings.Add("Checked", this, "OverrideTextColor", false, DataSourceUpdateMode.OnPropertyChanged);
             btnTextColor.DataBindings.Add("BackColor", this, "TextColor", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -61,6 +63,7 @@ namespace LiveSplit.UI.Components
             cmbComparison.SelectedIndexChanged += cmbComparison_SelectedIndexChanged;
             cmbComparison.DataBindings.Add("SelectedItem", this, "Comparison", false, DataSourceUpdateMode.OnPropertyChanged);
             chkTotalTimeSave.DataBindings.Add("Checked", this, "TotalTimeSave", false, DataSourceUpdateMode.OnPropertyChanged);
+            chkDropDecimals.DataBindings.Add("Checked", this, "DropDecimals", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         void chkOverrideTimeColor_CheckedChanged(object sender, EventArgs e)
@@ -89,6 +92,7 @@ namespace LiveSplit.UI.Components
             rdoSeconds.Checked = Accuracy == TimeAccuracy.Seconds;
             rdoTenths.Checked = Accuracy == TimeAccuracy.Tenths;
             rdoHundredths.Checked = Accuracy == TimeAccuracy.Hundredths;
+            chkDropDecimals.Checked = DropDecimals;
             if (Mode == LayoutMode.Horizontal)
             {
                 chkTwoRows.Enabled = false;
@@ -109,6 +113,11 @@ namespace LiveSplit.UI.Components
             btnColor2.DataBindings.Clear();
             btnColor2.DataBindings.Add("BackColor", this, btnColor1.Visible ? "BackgroundColor2" : "BackgroundColor", false, DataSourceUpdateMode.OnPropertyChanged);
             GradientString = cmbGradientType.SelectedItem.ToString();
+        }
+
+        void chkDropDecimals_CheckedChanged(object sender, EventArgs e)
+        {
+            DropDecimals = !DropDecimals;
         }
 
         void rdoHundredths_CheckedChanged(object sender, EventArgs e)
@@ -139,6 +148,7 @@ namespace LiveSplit.UI.Components
             TimeColor = SettingsHelper.ParseColor(element["TimeColor"]);
             OverrideTimeColor = SettingsHelper.ParseBool(element["OverrideTimeColor"]);
             Accuracy = SettingsHelper.ParseEnum<TimeAccuracy>(element["Accuracy"]);
+            DropDecimals = SettingsHelper.ParseBool(element["DropDecimals"], false);
             BackgroundColor = SettingsHelper.ParseColor(element["BackgroundColor"]);
             BackgroundColor2 = SettingsHelper.ParseColor(element["BackgroundColor2"]);
             GradientString = SettingsHelper.ParseString(element["BackgroundGradient"]);
@@ -167,6 +177,7 @@ namespace LiveSplit.UI.Components
             SettingsHelper.CreateSetting(document, parent, "TimeColor", TimeColor) ^
             SettingsHelper.CreateSetting(document, parent, "OverrideTimeColor", OverrideTimeColor) ^
             SettingsHelper.CreateSetting(document, parent, "Accuracy", Accuracy) ^
+            SettingsHelper.CreateSetting(document, parent, "DropDecimals", DropDecimals) ^
             SettingsHelper.CreateSetting(document, parent, "BackgroundColor", BackgroundColor) ^
             SettingsHelper.CreateSetting(document, parent, "BackgroundColor2", BackgroundColor2) ^
             SettingsHelper.CreateSetting(document, parent, "BackgroundGradient", BackgroundGradient) ^
@@ -178,6 +189,11 @@ namespace LiveSplit.UI.Components
         private void ColorButtonClick(object sender, EventArgs e)
         {
             SettingsHelper.ColorButtonClick((Button)sender, this);
+        }
+
+        private void groupBox4_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }
