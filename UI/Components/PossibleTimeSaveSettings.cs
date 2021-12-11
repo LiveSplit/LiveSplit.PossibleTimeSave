@@ -115,11 +115,6 @@ namespace LiveSplit.UI.Components
             GradientString = cmbGradientType.SelectedItem.ToString();
         }
 
-        void chkDropDecimals_CheckedChanged(object sender, EventArgs e)
-        {
-            DropDecimals = !DropDecimals;
-        }
-
         void rdoHundredths_CheckedChanged(object sender, EventArgs e)
         {
             UpdateAccuracy();
@@ -189,11 +184,6 @@ namespace LiveSplit.UI.Components
         private void ColorButtonClick(object sender, EventArgs e)
         {
             SettingsHelper.ColorButtonClick((Button)sender, this);
-        }
-
-        private void groupBox4_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -32,7 +32,6 @@ namespace LiveSplit.UI.Components
                 CurrentState = state
             };
             state.ComparisonRenamed += state_ComparisonRenamed;
-
         }
 
         void state_ComparisonRenamed(object sender, EventArgs e)
