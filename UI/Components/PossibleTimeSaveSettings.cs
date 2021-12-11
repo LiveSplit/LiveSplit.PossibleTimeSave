@@ -92,7 +92,6 @@ namespace LiveSplit.UI.Components
             rdoSeconds.Checked = Accuracy == TimeAccuracy.Seconds;
             rdoTenths.Checked = Accuracy == TimeAccuracy.Tenths;
             rdoHundredths.Checked = Accuracy == TimeAccuracy.Hundredths;
-            chkDropDecimals.Checked = DropDecimals;
             if (Mode == LayoutMode.Horizontal)
             {
                 chkTwoRows.Enabled = false;
