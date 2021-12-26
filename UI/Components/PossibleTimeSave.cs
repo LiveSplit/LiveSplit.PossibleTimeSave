@@ -53,6 +53,7 @@ namespace LiveSplit.UI.Components
                 = state.LayoutSettings.DropShadows;
 
             Formatter.Accuracy = Settings.Accuracy;
+            Formatter.DropDecimals = Settings.DropDecimals;
 
             InternalComponent.NameLabel.ForeColor = Settings.OverrideTextColor ? Settings.TextColor : state.LayoutSettings.TextColor;
             InternalComponent.ValueLabel.ForeColor = Settings.OverrideTimeColor ? Settings.TimeColor : state.LayoutSettings.TextColor;
