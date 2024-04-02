@@ -6,7 +6,6 @@
     <RootNamespace>LiveSplit</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
 
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
