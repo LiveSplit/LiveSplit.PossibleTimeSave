@@ -215,5 +215,8 @@ public class PossibleTimeSave : IComponent
     {
     }
 
-    public int GetSettingsHashCode() => Settings.GetSettingsHashCode();
+    public int GetSettingsHashCode()
+    {
+        return Settings.GetSettingsHashCode();
+    }
 }

@@ -15,7 +15,10 @@ public class PossibleTimeSaveFactory : IComponentFactory
 
     public ComponentCategory Category => ComponentCategory.Information;
 
-    public IComponent Create(LiveSplitState state) => new PossibleTimeSave(state);
+    public IComponent Create(LiveSplitState state)
+    {
+        return new PossibleTimeSave(state);
+    }
 
     public string UpdateName => ComponentName;
 
