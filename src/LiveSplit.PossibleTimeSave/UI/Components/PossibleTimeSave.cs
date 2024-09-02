@@ -63,8 +63,8 @@ public class PossibleTimeSave : IComponent
     private void DrawBackground(Graphics g, LiveSplitState state, float width, float height)
     {
         if (Settings.BackgroundColor.A > 0
-            || Settings.BackgroundGradient != GradientType.Plain
-            && Settings.BackgroundColor2.A > 0)
+            || (Settings.BackgroundGradient != GradientType.Plain
+            && Settings.BackgroundColor2.A > 0))
         {
             var gradientBrush = new LinearGradientBrush(
                         new PointF(0, 0),
@@ -150,11 +150,15 @@ public class PossibleTimeSave : IComponent
         {
             var segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetLiveSegmentDelta(state, state.Run.IndexOf(segment), comparison, state.CurrentTimingMethod);
             if (segmentDelta < time)
+            {
                 time = segmentDelta;
+            }
         }
 
         if (time < TimeSpan.Zero)
+        {
             time = TimeSpan.Zero;
+        }
 
         return time;
     }
@@ -163,7 +167,10 @@ public class PossibleTimeSave : IComponent
     {
         var comparison = Settings.Comparison == "Current Comparison" ? state.CurrentComparison : Settings.Comparison;
         if (!state.Run.Comparisons.Contains(comparison))
+        {
             comparison = state.CurrentComparison;
+        }
+
         var comparisonName = CompositeComparisons.GetShortComparisonName(comparison);
         var componentName = (Settings.TotalTimeSave ? "Total " : "") + "Possible Time Save" + (Settings.Comparison == "Current Comparison" ? "" : " (" + comparisonName + ")");
 
@@ -171,11 +178,15 @@ public class PossibleTimeSave : IComponent
         {
             InternalComponent.AlternateNameText.Clear();
             if (componentName.Contains("Total"))
+            {
                 InternalComponent.AlternateNameText.Add("Total Possible Time Save");
+            }
+
             InternalComponent.AlternateNameText.Add("Possible Time Save");
             InternalComponent.AlternateNameText.Add("Poss. Time Save");
             InternalComponent.AlternateNameText.Add("Time Save");
         }
+
         InternalComponent.LongestString = componentName;
         InternalComponent.InformationName = componentName;
 
