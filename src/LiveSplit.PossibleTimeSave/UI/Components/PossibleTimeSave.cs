@@ -209,7 +209,7 @@ public class PossibleTimeSave : IComponent
         }
         else
         {
-            if (state.CurrentPhase == TimerPhase.Running || state.CurrentPhase == TimerPhase.Paused)
+            if (state.CurrentPhase is TimerPhase.Running or TimerPhase.Paused)
             {
                 InternalComponent.TimeValue = GetPossibleTimeSave(state, state.CurrentSplit, comparison);
             }

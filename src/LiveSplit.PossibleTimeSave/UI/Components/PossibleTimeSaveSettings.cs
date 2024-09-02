@@ -88,7 +88,7 @@ public partial class PossibleTimeSaveSettings : UserControl
         chkOverrideTimeColor_CheckedChanged(null, null);
         cmbComparison.Items.Clear();
         cmbComparison.Items.Add("Current Comparison");
-        cmbComparison.Items.AddRange(CurrentState.Run.Comparisons.Where(x => x != BestSplitTimesComparisonGenerator.ComparisonName && x != BestSegmentsComparisonGenerator.ComparisonName && x != NoneComparisonGenerator.ComparisonName).ToArray());
+        cmbComparison.Items.AddRange(CurrentState.Run.Comparisons.Where(x => x is not BestSplitTimesComparisonGenerator.ComparisonName and not BestSegmentsComparisonGenerator.ComparisonName and not NoneComparisonGenerator.ComparisonName).ToArray());
         if (!cmbComparison.Items.Contains(Comparison))
         {
             cmbComparison.Items.Add(Comparison);
