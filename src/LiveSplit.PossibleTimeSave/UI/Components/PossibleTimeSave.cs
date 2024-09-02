@@ -125,13 +125,13 @@ public class PossibleTimeSave : IComponent
 
     public TimeSpan? GetPossibleTimeSave(LiveSplitState state, ISegment segment, string comparison, bool live = false)
     {
-        var splitIndex = state.Run.IndexOf(segment);
-        var prevTime = TimeSpan.Zero;
+        int splitIndex = state.Run.IndexOf(segment);
+        TimeSpan prevTime = TimeSpan.Zero;
         TimeSpan? bestSegments = state.Run[splitIndex].BestSegmentTime[state.CurrentTimingMethod];
 
         while (splitIndex > 0 && bestSegments != null)
         {
-            var splitTime = state.Run[splitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod];
+            TimeSpan? splitTime = state.Run[splitIndex - 1].Comparisons[comparison][state.CurrentTimingMethod];
             if (splitTime != null)
             {
                 prevTime = splitTime.Value;
@@ -144,11 +144,11 @@ public class PossibleTimeSave : IComponent
             }
         }
 
-        var time = segment.Comparisons[comparison][state.CurrentTimingMethod] - prevTime - bestSegments;
+        TimeSpan? time = segment.Comparisons[comparison][state.CurrentTimingMethod] - prevTime - bestSegments;
 
         if (live && splitIndex == state.CurrentSplitIndex)
         {
-            var segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetLiveSegmentDelta(state, state.Run.IndexOf(segment), comparison, state.CurrentTimingMethod);
+            TimeSpan? segmentDelta = TimeSpan.Zero - LiveSplitStateHelper.GetLiveSegmentDelta(state, state.Run.IndexOf(segment), comparison, state.CurrentTimingMethod);
             if (segmentDelta < time)
             {
                 time = segmentDelta;
@@ -165,14 +165,14 @@ public class PossibleTimeSave : IComponent
 
     public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
     {
-        var comparison = Settings.Comparison == "Current Comparison" ? state.CurrentComparison : Settings.Comparison;
+        string comparison = Settings.Comparison == "Current Comparison" ? state.CurrentComparison : Settings.Comparison;
         if (!state.Run.Comparisons.Contains(comparison))
         {
             comparison = state.CurrentComparison;
         }
 
-        var comparisonName = CompositeComparisons.GetShortComparisonName(comparison);
-        var componentName = (Settings.TotalTimeSave ? "Total " : "") + "Possible Time Save" + (Settings.Comparison == "Current Comparison" ? "" : " (" + comparisonName + ")");
+        string comparisonName = CompositeComparisons.GetShortComparisonName(comparison);
+        string componentName = (Settings.TotalTimeSave ? "Total " : "") + "Possible Time Save" + (Settings.Comparison == "Current Comparison" ? "" : " (" + comparisonName + ")");
 
         if (InternalComponent.InformationName != componentName)
         {
@@ -198,7 +198,7 @@ public class PossibleTimeSave : IComponent
             }
             else
             {
-                var totalPossibleTimeSave = state.Run
+                TimeSpan? totalPossibleTimeSave = state.Run
                     .Skip(state.CurrentSplitIndex)
                     .Select(x => GetPossibleTimeSave(state, x, comparison, true))
                     .Where(x => x.HasValue)
